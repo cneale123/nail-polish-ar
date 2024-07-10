@@ -1,5 +1,5 @@
 const videoElement = document.getElementById('video');
-const nailColor = getQueryVariable('color') || '#FF0000';  // Default color if none specified
+const nailColor = getQueryVariable('color') || '#8c1aff';  // Default color if none specified
 
 // Function to get query parameters from URL
 function getQueryVariable(variable) {
@@ -7,7 +7,7 @@ function getQueryVariable(variable) {
     const vars = query.split('&');
     for (let i = 0; i < vars.length; i++) {
         const pair = vars[i].split('=');
-        if (pair[0] == variable) {
+        if (pair[0] === variable) {
             return decodeURIComponent(pair[1]);
         }
     }
@@ -24,36 +24,46 @@ hands.setOptions({
 });
 
 hands.onResults(results => {
-    // Draw the nails with the selected color
-    const canvas = document.createElement('canvas');
+    // Create canvas if not already created
+    let canvas = document.getElementById('outputCanvas');
+    if (!canvas) {
+        canvas = document.createElement('canvas');
+        canvas.id = 'outputCanvas';
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        document.body.appendChild(canvas);
+    }
     const context = canvas.getContext('2d');
     canvas.width = videoElement.videoWidth;
     canvas.height = videoElement.videoHeight;
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Draw the video frame
     context.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
 
-    for (let hand of results.multiHandLandmarks) {
-        for (let i = 0; i < hand.length; i++) {
-            const x = hand[i].x * canvas.width;
-            const y = hand[i].y * canvas.height;
+    // Draw the nails with the selected color
+    results.multiHandLandmarks.forEach(handLandmarks => {
+        handLandmarks.slice(5, 21).forEach(landmark => {  // Landmarks for fingers
+            const x = landmark.x * canvas.width;
+            const y = landmark.y * canvas.height;
             context.beginPath();
             context.arc(x, y, 10, 0, 2 * Math.PI);
             context.fillStyle = nailColor;
             context.fill();
-        }
-    }
-
-    const displayCanvas = document.createElement('canvas');
-    displayCanvas.width = canvas.width;
-    displayCanvas.height = canvas.height;
-    displayCanvas.getContext('2d').drawImage(canvas, 0, 0);
-
-    document.body.appendChild(displayCanvas);
+        });
+    });
 });
 
 const startVideo = async () => {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { exact: "environment" } }
+    });
     videoElement.srcObject = stream;
-    await hands.send({ image: videoElement });
+    videoElement.onloadedmetadata = () => {
+        videoElement.play();
+        hands.send({ image: videoElement });
+    };
 };
 
 startVideo();
