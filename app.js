@@ -1,17 +1,50 @@
-const videoElement = document.getElementById('video');
+const video = document.getElementById('video');
+const colorButton = document.getElementById('colorButton');
 
-const startVideo = async () => {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: { exact: "environment" } }
-        });
-        videoElement.srcObject = stream;
-        videoElement.onloadedmetadata = () => {
-            videoElement.play();
-        };
-    } catch (error) {
-        console.error('Error accessing the camera:', error);
+// Access the device camera and stream to video element
+navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+    video.srcObject = stream;
+});
+
+// Initialize MediaPipe Hands
+const hands = new Hands({locateFile: (file) => {
+    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
+}});
+hands.setOptions({
+    maxNumHands: 1,
+    modelComplexity: 1,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+});
+hands.onResults(onResults);
+
+// Create a canvas to draw the hand detection overlay
+const canvas = document.createElement('canvas');
+document.body.appendChild(canvas);
+const ctx = canvas.getContext('2d');
+
+async function onResults(results) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+        const landmarks = results.multiHandLandmarks[0];
+        for (let i = 0; i < landmarks.length; i++) {
+            const x = landmarks[i].x * canvas.width;
+            const y = landmarks[i].y * canvas.height;
+            ctx.fillStyle = colorButton.style.backgroundColor;
+            ctx.beginPath();
+            ctx.arc(x, y, 5, 0, 2 * Math.PI);
+            ctx.fill();
+        }
     }
-};
+}
 
-startVideo();
+// Initialize the camera and MediaPipe Hands
+const camera = new Camera(video, {
+    onFrame: async () => {
+        await hands.send({image: video});
+    },
+    width: 1280,
+    height: 720
+});
+camera.start
