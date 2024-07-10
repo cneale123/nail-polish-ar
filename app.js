@@ -7,9 +7,11 @@ navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
 });
 
 // Initialize MediaPipe Hands
-const hands = new Hands({locateFile: (file) => {
-    return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
-}});
+const hands = new Hands({
+    locateFile: (file) => {
+        return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}';
+}
+});
 hands.setOptions({
     maxNumHands: 1,
     modelComplexity: 1,
