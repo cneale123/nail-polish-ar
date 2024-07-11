@@ -1,3 +1,5 @@
+console.log
+
 import {
     HandLandmarker,
     FilesetResolver
