@@ -1,4 +1,4 @@
-console.log
+console.log("JS started")
 
 import {
     HandLandmarker,
