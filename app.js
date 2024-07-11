@@ -2,15 +2,21 @@ const video = document.getElementById('video');
 const colorButton = document.getElementById('colorButton');
 
 // Access the device camera and stream to video element
-navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+navigator.mediaDevices.getUserMedia({
+    video: {
+        facingMode: "user" // Change to "environment" if you want to use the back camera
+    }
+}).then(stream => {
+    console.log("Camera accessed successfully");
     video.srcObject = stream;
+}).catch(error => {
+    console.error("Error accessing camera: ", error);
+    alert("Error accessing camera: " + error.message);
 });
 
-// Initialize MediaPipe Hands
+// Initialize MediaPipe Hands with the correct locateFile function
 const hands = new Hands({
-    locateFile: (file) => {
-        return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}';
-}
+    locateFile: (file) => {return 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}'}
 });
 hands.setOptions({
     maxNumHands: 1,
@@ -49,4 +55,9 @@ const camera = new Camera(video, {
     width: 1280,
     height: 720
 });
-camera.start
+camera.start();
+
+// Handle color picker button click
+colorButton.addEventListener('click', () => {
+    colorButton.style.backgroundColor = prompt('Enter nail polish color (hex code):', '#FF69B4');
+});
