@@ -15,8 +15,8 @@ navigator.mediaDevices.getUserMedia({
 });
 
 // Initialize MediaPipe Hands with the correct locateFile function
-const hands = new hands({
-    locateFile: (file) => 'https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}'
+const hands = new Hands({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
 });
 hands.setOptions({
     maxNumHands: 1,
