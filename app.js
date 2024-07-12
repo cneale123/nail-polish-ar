@@ -17,15 +17,16 @@ import {
   // get everything needed to run.
   const createHandLandmarker = async () => {
     const vision = await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0/wasm"
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
     );
-    handLandmarker = await HandLandmarker.createFromOptions(vision, {
+    handLandmarker = await 
+    HandLandmarker.createFromOptions(vision, {
       baseOptions: {
         modelAssetPath: `https://storage.googleapis.com/mediapipe-models/hand_landmarker/hand_landmarker/float16/1/hand_landmarker.task`,
         delegate: "GPU"
       },
-      runningMode: runningMode,
-      numHands: 2
+      runningMode: "IMAGE",
+      numHands: 1
     });
     demosSection.classList.remove("invisible");
   };
@@ -140,6 +141,24 @@ import {
     navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
       video.srcObject = stream;
       video.addEventListener("loadeddata", predictWebcam);
+      video.addEventListener('click', function() {
+        if (facingMode == "user") {
+          facingMode = "environment";
+        } else {
+          facingMode = "user";
+        }
+       
+        constraints = {
+          audio: false,
+          video: {
+            facingMode: facingMode
+          }
+        } 
+       
+        navigator.mediaDevices.getUserMedia(constraints).then(function success(stream) {
+          video.srcObject = stream; 
+        });
+      });
     });
   }
   
@@ -147,6 +166,7 @@ import {
   let results;
   
   async function predictWebcam() {
+    
     canvasElement.style.width = video.videoWidth + 'px';
     canvasElement.style.height = video.videoHeight + 'px';
     canvasElement.width = video.videoWidth;
