@@ -3,7 +3,7 @@ console.log("JS started")
 import {
     HandLandmarker,
     FilesetResolver
-  } from "https://cdn.jsdelinpvr.net/npm/@mediapipe/tasks-vision@0.10.0";
+  } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.js";
 
   import {
     HAND_CONNECTIONS
