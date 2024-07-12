@@ -4,6 +4,12 @@ import {
     HandLandmarker,
     FilesetResolver
   } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
+
+  import {
+    HAND_CONNECTIONS,
+    drawConnectors,
+    drawLandmarks
+  } from "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js";
   
   const demosSection = document.getElementById("demos");
   
@@ -26,11 +32,29 @@ import {
         delegate: "GPU"
       },
       runningMode: "IMAGE",
-      numHands: 1
+      numHands: 2
     });
     demosSection.classList.remove("invisible");
   };
   createHandLandmarker();
+  async function handleClick(event) {
+    if (!handLandmarker) {
+      console.log("Wait for handLandmarker to load before clicking!");
+      return;
+    }
+  
+    if (runningMode === "VIDEO") {
+      runningMode = "IMAGE";
+      await handLandmarker.setOptions({ runningMode: "IMAGE" });
+    }
+    // Remove all landmarks drawed before
+    const allCanvas = event.target.parentNode.getElementsByClassName("canvas");
+    for (var i = allCanvas.length - 1; i >= 0; i--) {
+      const n = allCanvas[i];
+      n.parentNode.removeChild(n);
+    }
+}
+  
   
   /********************
   /********************************************************************
