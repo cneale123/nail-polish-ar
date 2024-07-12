@@ -1,5 +1,5 @@
-console.log("JS started")
 
+console.log("JS started")
 import {
     HandLandmarker,
     FilesetResolver
@@ -69,16 +69,11 @@ import {
   const canvasCtx = canvasElement.getContext("2d");
   
   // Check if webcam access is supported.
-  const hasGetUserMedia = () => !!navigator.mediaDevices?.getUserMedia;
   
-  // If webcam supported, add event listener to button for when user
-  // wants to activate it.
-  if (hasGetUserMedia()) {
+  
     enableWebcamButton = document.getElementById("webcamButton");
     enableWebcamButton.addEventListener("click", enableCam);
-  } else {
-    console.warn("getUserMedia() is not supported by your browser");
-  }
+
   
   // Enable the live webcam view and start detection.
   function enableCam(event) {
