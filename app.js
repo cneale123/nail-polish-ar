@@ -6,7 +6,10 @@ import {
   } from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.0";
 
   import {
-    HAND_CONNECTIONS,
+    HAND_CONNECTIONS
+  } from "https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js";
+
+  import {
     drawConnectors,
     drawLandmarks
   } from "https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js";
